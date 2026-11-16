@@ -10,6 +10,8 @@ My [in-line carbon fiber loading experiment](https://github.com/peterccohan/carb
 
 This page is a design log. Build progress, CAD, and test data will be added as each stage is completed.
 
+**Build manual:** [BUILD_GUIDE.md](BUILD_GUIDE.md) has the full step-by-step build: parts, prep, gearbox, barrel, heater, wiring, firmware rules, and first-run checks. An interactive version with a 3D model is in [`docs/`](docs/).
+
 ## Design Decisions
 
 | Decision | Chosen | Instead of | Reasoning |

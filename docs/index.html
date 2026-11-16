@@ -1,0 +1,625 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Pellet Extruder Build Manual</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: a bench manual. Wide header band with the machine; below, a sticky step index beside one reading column of numbered steps (figure + instructions). */
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --ink:#192127; --muted:#58646e; --line:#d8dee4;
+  --accent:#1d7f47; --accent-ink:#ffffff; --accent-soft:#e2f2e8;
+  --warn:#b9450f; --warn-soft:#fcede3; --fig:#eef1f4; --dot:#e2611b;
+  --f-display:"Archivo","Arial Narrow",Arial,sans-serif;
+  --f-body:"IBM Plex Sans",-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:36px; --s7:56px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1418; --surface:#161d23; --ink:#e4e9ed; --muted:#9aa6b0; --line:#28323b;
+  --accent:#58c985; --accent-ink:#0f1418; --accent-soft:#173426; --warn:#f59a5b; --warn-soft:#3a2417; --fig:#eef1f4; --dot:#f07a32; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1418; --surface:#161d23; --ink:#e4e9ed; --muted:#9aa6b0; --line:#28323b;
+  --accent:#58c985; --accent-ink:#0f1418; --accent-soft:#173426; --warn:#f59a5b; --warn-soft:#3a2417; --fig:#eef1f4; --dot:#f07a32; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg); color:var(--ink); font:400 16px/1.6 var(--f-body); -webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--f-display); font-stretch:112%; line-height:1.15; text-wrap:balance; margin:0}
+h1{font-size:clamp(2rem,5vw,3.3rem); font-weight:800; letter-spacing:-.01em}
+h2{font-size:clamp(1.45rem,3vw,1.95rem); font-weight:750}
+h3{font-size:1.15rem; font-weight:700}
+p{margin:0} a{color:var(--accent)}
+code,.mono{font-family:var(--f-mono); font-size:.88em}
+.wrap{max-width:1240px; margin:0 auto; padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:3px solid var(--accent); outline-offset:2px; border-radius:4px}
+
+/* header */
+header{padding-block:var(--s6) var(--s5)}
+.eyebrow{font:500 .78rem/1 var(--f-mono); letter-spacing:.09em; text-transform:uppercase; color:var(--muted)}
+.lede{max-width:64ch; color:var(--muted); font-size:1.06rem; margin-top:var(--s3)}
+.head-grid{display:grid; gap:var(--s3)}
+.specs{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:10px; overflow:hidden; margin-top:var(--s5)}
+.specs div{background:var(--surface); padding:var(--s3) var(--s4); display:grid; gap:2px}
+.specs dt{font:500 .72rem/1.3 var(--f-mono); letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+.specs dd{margin:0; font-weight:600; font-variant-numeric:tabular-nums}
+
+/* figures */
+figure{margin:0}
+.fig{position:relative; background:var(--fig); border-radius:10px; overflow:hidden; border:1px solid var(--line)}
+.fig img{display:block; width:100%; height:auto; aspect-ratio:16/10}
+figcaption{font-size:.86rem; color:var(--muted); margin-top:var(--s2)}
+.mk{position:absolute; width:24px; height:24px; margin:-12px 0 0 -12px; border-radius:50%; background:var(--dot); color:#fff; font:600 .72rem/24px var(--f-mono); text-align:center; box-shadow:0 0 0 2px #fff}
+@media (max-width:560px){.mk{width:18px;height:18px;margin:-9px 0 0 -9px;font-size:.6rem;line-height:18px}}
+.legend{list-style:none; padding:0; margin:var(--s3) 0 0; display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:var(--s1) var(--s5); font-size:.92rem}
+.legend li{display:flex; gap:var(--s2); align-items:baseline}
+.legend b{flex:none; width:22px; height:22px; border-radius:50%; background:var(--dot); color:#fff; font:600 .7rem/22px var(--f-mono); text-align:center}
+
+/* page body */
+.page{display:grid; gap:var(--s6); padding-block:var(--s5) var(--s7)}
+@media (min-width:1080px){.page{grid-template-columns:220px minmax(0,1fr); gap:var(--s6)}}
+nav.toc{font-size:.9rem}
+@media (min-width:1080px){nav.toc{position:sticky; top:calc(env(safe-area-inset-top,0px) + 16px); align-self:start; max-height:calc(100vh - 32px); overflow:auto}}
+nav.toc ol{list-style:none; margin:0; padding:0; display:grid; gap:2px}
+nav.toc a{display:block; padding:5px 10px; border-radius:6px; color:var(--ink); text-decoration:none}
+nav.toc a:hover{background:var(--accent-soft)}
+nav.toc .sub a{padding-left:22px; color:var(--muted); font-size:.85rem}
+@media (max-width:1079px){nav.toc ol{display:flex; flex-wrap:wrap; gap:6px} nav.toc .sub{display:none} nav.toc a{border:1px solid var(--line); background:var(--surface); padding:4px 10px}}
+main{min-width:0; display:grid; gap:var(--s7)}
+section{display:grid; gap:var(--s5); scroll-margin-top:16px}
+.sec-head{display:grid; gap:var(--s2); border-top:2px solid var(--ink); padding-top:var(--s3)}
+.sec-head p{max-width:70ch; color:var(--muted)}
+.prose{max-width:72ch; display:grid; gap:var(--s3)}
+
+/* steps */
+.step{display:grid; gap:var(--s4); background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:var(--s4); scroll-margin-top:16px}
+@media (min-width:900px){.step.has-fig{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); padding:var(--s5); gap:var(--s5)}}
+.step-head{display:flex; gap:var(--s3); align-items:baseline}
+.step > figure{align-self:start}
+.sid{font:600 .82rem/1 var(--f-mono); color:var(--accent-ink); background:var(--accent); padding:5px 8px; border-radius:5px; flex:none}
+.step-body{display:grid; gap:var(--s3); align-content:start; min-width:0}
+.step ol,.step ul{margin:0; padding-left:1.2em; display:grid; gap:6px}
+.parts{font-size:.85rem; color:var(--muted); border-top:1px dashed var(--line); padding-top:var(--s2)}
+.parts b{color:var(--ink); font-weight:600}
+.note,.warn{border-radius:8px; padding:var(--s3) var(--s4); font-size:.93rem}
+.note{background:var(--accent-soft)}
+.warn{background:var(--warn-soft); border-left:4px solid var(--warn)}
+.warn strong{color:var(--warn)}
+
+/* tables */
+.tbl{overflow-x:auto; border:1px solid var(--line); border-radius:10px; background:var(--surface)}
+table{border-collapse:collapse; width:100%; font-size:.9rem}
+th,td{text-align:left; padding:9px 12px; border-bottom:1px solid var(--line); vertical-align:top}
+th{font:600 .74rem/1.3 var(--f-mono); letter-spacing:.06em; text-transform:uppercase; color:var(--muted); background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.num{font-variant-numeric:tabular-nums; white-space:nowrap}
+.tag{display:inline-block; font:500 .7rem/1.4 var(--f-mono); padding:1px 6px; border-radius:4px; background:var(--accent-soft); color:var(--accent); white-space:nowrap}
+.tag.w{background:var(--warn-soft); color:var(--warn)}
+.cols{display:grid; gap:var(--s4)} @media (min-width:820px){.cols{grid-template-columns:1fr 1fr}}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:var(--s4); display:grid; gap:var(--s2); align-content:start}
+.card h3{font-size:1rem}
+.card ul{margin:0; padding-left:1.1em; display:grid; gap:4px; font-size:.93rem}
+
+/* wiring svg */
+.wiring{overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:var(--s3)}
+.wiring svg{display:block; min-width:760px; width:100%; height:auto}
+.wb{fill:var(--bg); stroke:var(--ink); stroke-width:1.4}
+.wb.hot{fill:var(--warn-soft); stroke:var(--warn)}
+.wb.ctl{fill:var(--accent-soft); stroke:var(--accent)}
+.wt{fill:var(--ink); font:600 13px var(--f-body)} .ws{fill:var(--muted); font:400 11px var(--f-mono)}
+.w24{stroke:var(--warn); stroke-width:2.4; fill:none} .wg{stroke:var(--ink); stroke-width:2; fill:none; stroke-dasharray:6 4}
+.wsig{stroke:var(--accent); stroke-width:1.8; fill:none}
+.wl{fill:var(--muted); font:500 10.5px var(--f-mono)}
+
+/* viewer */
+.viewer{position:relative; aspect-ratio:16/10; max-width:100%; background:var(--fig); border-radius:12px; overflow:hidden; border:1px solid var(--line)}
+.viewer canvas{display:block; width:100%; height:100%}
+.viewer .poster{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+.vbar{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+button{font:600 .9rem var(--f-body); border:1px solid var(--line); background:var(--surface); color:var(--ink); padding:8px 14px; border-radius:8px; cursor:pointer}
+button[aria-pressed="true"]{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
+button.primary{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
+.vmsg{font-size:.85rem; color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+
+<header>
+  <div class="wrap head-grid">
+    <span class="eyebrow">Home lab build · v1 · Nov 2026</span>
+    <h1>Pellet Extruder Build Manual</h1>
+    <p class="lede">Everything needed to build the desktop filament extruder: a 3/4&nbsp;in ship-auger screw in a black-steel barrel, driven by two NEMA&nbsp;17s through a printed 20:1 gearbox, heated by a 24&nbsp;V band heater and controlled by an ESP32. Every render below comes from the same CAD files you print from.</p>
+    <figure style="margin-top:var(--s5)">
+      <div class="fig" id="hero">
+        <img src="img/m_hero.jpg" alt="Rendered extruder on its plywood base: gearbox and motors at the left, bulkhead and hopper in the middle, black barrel with band heater and brass die cap, fan stand at the right." width="1600" height="1000">
+      </div>
+      <ol class="legend" id="hero-legend"></ol>
+    </figure>
+    <dl class="specs">
+      <div><dt>Screw</dt><dd>3/4″ ship auger, ~293 mm flighted, L/D ≈ 15</dd></div>
+      <div><dt>Drive</dt><dd>2× NEMA 17 → 20:1 → ~12 N·m, 15 RPM</dd></div>
+      <div><dt>Heat</dt><dd>24 V, 150 W band, ESP32 PID</dd></div>
+      <div><dt>Die</dt><dd>1.75 mm, drilled brass cap</dd></div>
+      <div><dt>Axis height</dt><dd>110 mm above the base</dd></div>
+      <div><dt>Footprint</dt><dd>620 × 300 mm plywood</dd></div>
+    </dl>
+  </div>
+</header>
+
+<div class="wrap page">
+  <nav class="toc" aria-label="Sections">
+    <ol>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#start">Before you start</a></li>
+      <li><a href="#parts">Parts</a></li>
+      <li><a href="#prep">Prep work</a></li>
+      <li><a href="#gearbox">Gearbox</a></li>
+      <li class="sub"><a href="#g1">G1 Bearings, motors</a></li>
+      <li class="sub"><a href="#g4">G4 Gear pair</a></li>
+      <li class="sub"><a href="#g6">G6 Bolt up, test</a></li>
+      <li><a href="#frame">Frame and barrel</a></li>
+      <li class="sub"><a href="#f3">F3 Auger, thrust stack</a></li>
+      <li class="sub"><a href="#f4">F4 Mount gearbox</a></li>
+      <li><a href="#heat">Hopper, heat, cooling</a></li>
+      <li><a href="#wiring">Wiring</a></li>
+      <li><a href="#firmware">Firmware rules</a></li>
+      <li><a href="#commission">First run</a></li>
+      <li><a href="#run">Running it</a></li>
+      <li><a href="#trouble">Troubleshooting</a></li>
+      <li><a href="#model">3D model</a></li>
+      <li><a href="#dims">Key dimensions</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <!-- HOW IT WORKS -->
+    <section id="how">
+      <div class="sec-head"><span class="eyebrow">Overview</span><h2>How it works</h2>
+        <p>Cut down the middle, the machine is one straight line from motor to die. Pellets drop through the hopper into the screw, get carried forward and melted, and leave through the die as filament.</p></div>
+      <figure>
+        <div class="fig" id="cut"><img src="img/m_cut.jpg" alt="Cutaway render through the auger axis showing the screw inside the barrel, the thrust bearing at the bulkhead, and the hex shank inside the gearbox." width="1600" height="1000" loading="lazy"></div>
+        <ol class="legend" id="cut-legend"></ol>
+      </figure>
+      <div class="note">The screw pushes plastic forward, so the plastic pushes the screw back toward the motors with up to a few kilonewtons. That load goes through the thrust bearing into the steel thrust bar and the flange bolts. The gearbox only twists the auger: the hex is a slip fit, so none of that push reaches the printed gears.</div>
+    </section>
+
+    <!-- BEFORE YOU START -->
+    <section id="start">
+      <div class="sec-head"><span class="eyebrow">Read first</span><h2>Before you start</h2></div>
+      <div class="cols">
+        <div class="card"><h3>Safety</h3><ul>
+          <li>The barrel runs at 180–200 °C and stays hot for more than 30 minutes after power-off. Touch it only with heat gloves.</li>
+          <li>Never run the heater without all three protections: the firmware cutoffs, the 240 °C thermal fuse, and the supply's current limit.</li>
+          <li>Everything on the machine is 24 V DC. Only the bench supply plugs into the wall.</li>
+          <li>At the output the gearbox makes about 12 N·m. Keep fingers out of the hopper throat while the screw turns, and power off before clearing a jam.</li>
+          <li>Wear eye protection when cutting steel, and a mask when drilling PAHT-CF; its dust is fine carbon fiber.</li>
+          <li>Run it in a ventilated room, and never leave it unattended while it's hot.</li>
+        </ul></div>
+        <div class="card"><h3>Tools</h3><ul>
+          <li>Drill (a drill press is much better for the die and the thrust bar)</li>
+          <li>Bits: 1.75 mm, 1/4″, 17/64″, 9/16″ (or a step bit), plus a center punch</li>
+          <li>Hacksaw or angle grinder, and a Dremel with cutoff wheels</li>
+          <li>Two pipe wrenches (or a vise and one wrench), a file, a deburring tool</li>
+          <li>Calipers, multimeter, crimper, hex keys (2.5 and 4 mm), 7/16″ and 13 mm wrenches</li>
+          <li>Soldering iron for the heat-set inserts, and a luggage scale for the torque test</li>
+        </ul></div>
+      </div>
+      <p class="note"><strong>Reading the step renders:</strong> the parts added in each step are shown in full color, and everything already installed is faded.</p>
+    </section>
+
+    <!-- PARTS -->
+    <section id="parts">
+      <div class="sec-head"><span class="eyebrow">Bill of materials</span><h2>Parts</h2>
+        <p>Purchased parts follow the master BOM, plus a plywood base and wood screws. Parts 08–11 and the M3 × 10 version of 03b were added for this version.</p></div>
+      <div class="tbl"><table>
+        <thead><tr><th>#</th><th>Printed part</th><th>Qty</th><th>Material</th><th>Print notes</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">00</td><td>Fit-test coupon</td><td class="num">1</td><td>PAHT-CF</td><td>Print first. Checks the bearing pockets, hex, D-shaft and insert holes.</td></tr>
+          <tr><td class="mono">01</td><td>Motor pinion 15T</td><td class="num">2</td><td>PAHT-CF</td><td>Hub up</td></tr>
+          <tr><td class="mono">02</td><td>Compound gear 75T + 15T</td><td class="num">1</td><td>PAHT-CF</td><td>75T face down</td></tr>
+          <tr><td class="mono">03a</td><td>Output gear 60T, rear half</td><td class="num">1</td><td>PAHT-CF</td><td>Apex face down, no supports</td></tr>
+          <tr><td class="mono">03b</td><td>Output gear 60T, front half <span class="tag">M3 × 10</span></td><td class="num">1</td><td>PAHT-CF</td><td>Apex face down. If you printed the earlier version, see <a href="#p1">P1</a>.</td></tr>
+          <tr><td class="mono">04 / 05</td><td>Back plate, front plate</td><td class="num">1 + 1</td><td>PETG or PAHT-CF</td><td>Inner face down</td></tr>
+          <tr><td class="mono">06</td><td>Standoff 41 mm</td><td class="num">4</td><td>PETG</td><td>The lower two are swapped for the feet in <a href="#f4">F4</a></td></tr>
+          <tr><td class="mono">07</td><td>Axle spacer 1 mm</td><td class="num">2</td><td>PAHT-CF</td><td></td></tr>
+          <tr><td class="mono">08a / 08b</td><td>Gearbox feet A and B <span class="tag">new</span></td><td class="num">1 + 1</td><td>PETG</td><td>As exported, tab on the bed</td></tr>
+          <tr><td class="mono">09</td><td>Bulkhead <span class="tag">new</span></td><td class="num">1</td><td>PAHT-CF</td><td>Motor-side face down. 5 walls, 40% gyroid. It touches the steel flange, which gets warm.</td></tr>
+          <tr><td class="mono">10</td><td>Hopper <span class="tag">new</span></td><td class="num">1</td><td>PETG</td><td>As exported, upside down on its rim. No supports.</td></tr>
+          <tr><td class="mono">11</td><td>Fan stand <span class="tag">new</span></td><td class="num">1</td><td>PETG</td><td>As exported, flat</td></tr>
+        </tbody></table></div>
+      <div class="cols">
+        <div class="card"><h3>Gearbox hardware</h3><ul>
+          <li>2× NEMA 17 + MKS SERVO42D, 2× 608, 2× 6705-2RS</li>
+          <li>8× M3 heat-set inserts, 2× M3 × 4 set screws</li>
+          <li>6× M3 × 10 socket-head screws (output gear halves)</li>
+          <li>Motor screws: see <a href="#g1">G1</a></li>
+          <li>M8 × 70 bolt, nylock nut, 2 washers</li>
+          <li>4× M5 × 60 with nuts and washers; PTFE grease</li>
+        </ul></div>
+        <div class="card"><h3>Barrel, thrust, frame</h3><ul>
+          <li>Irwin 47412 3/4″ × 17″ ship auger</li>
+          <li>3/4″ × 12″ black nipple, 3/4″ black floor flange, 3/4″ brass cap, PTFE tape</li>
+          <li>AXK1528 needle thrust bearing with both washers</li>
+          <li>102 mm (4″) cut from the 1/4″ × 1.5″ steel bar</li>
+          <li>4× 1/4-20 × 1.5″ bolts with nuts and washers</li>
+          <li><span class="tag">new</span> 3/4″ plywood, about 620 × 300 mm</li>
+          <li><span class="tag">new</span> About 12 #8 × 3/4″ pan-head wood screws</li>
+        </ul></div>
+        <div class="card"><h3>Hopper, heat, cooling</h3><ul>
+          <li>3 stainless hose clamps: 2 for the hopper, 1 for the thermocouple</li>
+          <li>24 V 150 W band heater, K-type ring thermocouple</li>
+          <li>240 °C thermal fuse and 2 bare butt splices</li>
+          <li>Woodstove gasket rope, Kapton tape</li>
+          <li>24 V 80 mm fan and 4 fan screws</li>
+        </ul></div>
+        <div class="card"><h3>Power and control</h3><ul>
+          <li>Bench supply, inline 15 A fuse, latching e-stop (NC)</li>
+          <li>MAX31855 amplifier, MOSFET module, ESP32, potentiometer</li>
+          <li>14 AWG silicone wire, ring terminals, lever connectors, jumpers</li>
+        </ul></div>
+      </div>
+      <div class="warn"><strong>Measure these before printing parts 08–09.</strong> Four dimensions are set from typical values. If yours differ, change that dimension in CAD and re-export the part before printing.
+        <div class="tbl" style="margin-top:var(--s3)"><table>
+          <thead><tr><th>Measure</th><th>Design value</th><th>Affects</th></tr></thead>
+          <tbody>
+            <tr><td>Auger hex shank, across the flats</td><td class="num">11.11 mm (7/16″)</td><td>Output gear hex bore</td></tr>
+            <tr><td>Auger shank length, from where the flight starts to the end of the hex</td><td class="num">44–94 mm works</td><td>Gearbox position (<a href="#f4">F4</a>)</td></tr>
+            <tr><td>Floor flange: center-to-center distance of opposite bolt holes</td><td class="num">63.5 mm</td><td>Bulkhead and thrust bar holes</td></tr>
+            <tr><td>Motor shaft length past the motor face</td><td class="num">≥ 23 mm</td><td>Pinion set screw reach</td></tr>
+          </tbody></table></div>
+      </div>
+    </section>
+
+    <!-- PREP -->
+    <section id="prep">
+      <div class="sec-head"><span class="eyebrow">Part P</span><h2>Prep work</h2><p>Do the cutting and drilling first, so assembly is just fitting parts together.</p></div>
+      <article class="step" id="p1"><div class="step-head"><span class="sid">P1</span><h3>Deepen the output-gear counterbores (old 03b only)</h3></div>
+        <div class="step-body"><ol>
+          <li>If your front half is the earlier version, its six screw counterbores are 3 mm deep. They need to be 6 mm for M3 × 10 screws.</li>
+          <li>Clamp it face up on scrap wood. Put a tape flag on a 1/4″ bit 6 mm from where the cutting edges start.</li>
+          <li>Drill at low speed with light pressure, backing out to clear chips. Test one counterbore with a screw before doing the other five.</li>
+        </ol></div></article>
+      <article class="step" id="p2"><div class="step-head"><span class="sid">P2</span><h3>Heat-set inserts</h3></div>
+        <div class="step-body"><ol>
+          <li>Pinions: one insert per hub, flush with the outside. Use short inserts so they don't poke into the 5 mm bore.</li>
+          <li>Output rear half: six inserts in the apex face, pressed in straight and flush.</li>
+        </ol></div></article>
+      <article class="step" id="p3"><div class="step-head"><span class="sid">P3</span><h3>Thrust bar</h3></div>
+        <div class="step-body"><ol>
+          <li>Cut 102 mm (4″) from the 1/4″ × 1.5″ bar and file the ends square.</li>
+          <li>Center-punch, then drill a <span class="mono">9/16″ (14.3 mm)</span> hole in the middle. It must be smaller than the bearing's 15 mm bore, so the bearing washer sits fully on steel.</li>
+          <li>Drill two <span class="mono">17/64″</span> holes on the centerline, 31.75 mm each side of center (use your flange's spacing). Clamp the bar and use cutting oil.</li>
+        </ol></div></article>
+      <article class="step" id="p4"><div class="step-head"><span class="sid">P4</span><h3>Die</h3></div>
+        <div class="step-body"><ol>
+          <li>Center-punch the middle of one brass cap's flat end and drill <span class="mono">1.75 mm</span> straight through, ideally on a drill press.</li>
+          <li>Deburr the inside. The other caps are spares for trying different hole sizes later.</li>
+        </ol></div></article>
+      <article class="step" id="p5"><div class="step-head"><span class="sid">P5</span><h3>Auger</h3></div>
+        <div class="step-body"><ol>
+          <li>Grind off the threaded lead screw and spur at the tip.</li>
+          <li>Slide the bit into the nipple and spin it by hand. It must turn without rubbing. File down any high spots on the flight edge.</li>
+          <li>Measure the shank (see the table under Parts). Don't cut the flight to length yet; that happens in <a href="#f3">F3</a>.</li>
+        </ol></div></article>
+    </section>
+
+    <!-- GEARBOX -->
+    <section id="gearbox">
+      <div class="sec-head"><span class="eyebrow">Part G</span><h2>Gearbox</h2><p>Build it flat on the bench, back plate down, with four standoffs. It mounts to the frame in F4.</p></div>
+      <figure><div class="fig"><img src="img/g_exploded.jpg" alt="Exploded gearbox along its axis: motors, back plate, pinions, compound gear, output gear halves, standoffs and front plate." width="1600" height="1000" loading="lazy"></div>
+        <figcaption>Gearbox exploded along the auger axis. Stage 1: two 15T pinions drive the shared 75T (5:1). Stage 2: the 15T herringbone drives the 60T output (4:1).</figcaption></figure>
+
+      <article class="step has-fig" id="g1"><figure class="fig"><img src="img/g1.jpg" alt="Back plate with both motors mounted underneath." width="1600" height="1000" loading="lazy"></figure>
+        <div class="step-body"><div class="step-head"><span class="sid">G1</span><h3>Bearings and motors</h3></div><ol>
+          <li>Press a 6705 into each plate from the inner face until it seats on the lip. Press a 608 into each end of the compound gear. Push on the outer race only.</li>
+          <li>Set the motors on the outer face of the back plate, bosses in the holes, connectors pointing the same way.</li>
+          <li>The <b>outer two</b> screws on each motor are fine as-is.</li>
+          <li>The <b>inner two</b> (nearest the M8 axle hole) sit under the 75T gear, which runs only 1 mm above the plate. Either leave them out, or use screws short enough to sit fully inside the counterbores without bottoming on the motor's internal bolts.</li>
+        </ol><p class="parts"><b>Parts:</b> 04, 2× 6705, 2× 608, 02, motors, M3 screws</p></div></article>
+
+      <article class="step has-fig" id="g2"><figure class="fig"><img src="img/g2.jpg" alt="Two 15T pinions on the motor shafts above the back plate." width="1600" height="1000" loading="lazy"></figure>
+        <div class="step-body"><div class="step-head"><span class="sid">G2</span><h3>Pinions, then check direction</h3></div><ol>
+          <li>Slide each pinion on, hub away from the plate, with the teeth 1 mm above the plate. A 1 mm axle spacer makes a good shim.</li>
+          <li>Tighten the set screw onto the D flat.</li>
+          <li>Wire both drivers to the same STEP/DIR and jog them. Both pinions must turn the same way. If one doesn't, flip its direction in that SERVO42D's menu.</li>
+        </ol><div class="warn"><strong>Do this check now.</strong> Two motors fighting each other strip teeth within seconds.</div>
+        <p class="parts"><b>Parts:</b> 2× 01, 2× M3 × 4 set screws</p></div></article>
+
+      <article class="step has-fig" id="g3"><figure class="fig"><img src="img/g3.jpg" alt="Output gear halves separated with six screws above." width="1600" height="1000" loading="lazy"></figure>
+        <div class="step-body"><div class="step-head"><span class="sid">G3</span><h3>Join the output gear</h3></div><ol>
+          <li>Put the apex faces together. Any of the six bolt alignments works; the teeth and the hex line up in all six.</li>
+          <li>Drive 6× M3 × 10 into the inserts, tightening in a star pattern.</li>
+          <li>Push the auger shank through both halves. It should slide in without catching at the seam.</li>
+        </ol><p class="parts"><b>Parts:</b> 03a, 03b, 6× M3 × 10</p></div></article>
+
+      <article class="step has-fig" id="g4"><figure class="fig"><img src="img/g4.jpg" alt="Compound gear and output gear held meshed together above the back plate." width="1600" height="1000" loading="lazy"></figure>
+        <div class="step-body"><div class="step-head"><span class="sid">G4</span><h3>Drop in the gear pair together</h3></div><ol>
+          <li>Push the M8 bolt and a washer up through the back plate, then put a 1 mm spacer on it.</li>
+          <li>Mesh the compound gear's herringbone 15T with the 60T by hand, with the V apexes level.</li>
+          <li>Lower both at once: the output's rear journal into the back 6705, and the compound gear onto the M8 with the 75T engaging both pinions.</li>
+          <li>Add the second spacer on top.</li>
+        </ol><div class="warn"><strong>Don't slide one in after the other.</strong> Herringbone teeth can't enter mesh along the axis; they jam.</div>
+        <p class="parts"><b>Parts:</b> M8 × 70, washer, 2× 07, 02, output gear</p></div></article>
+
+      <article class="step has-fig" id="g5"><figure class="fig"><img src="img/g5.jpg" alt="Front plate lowering onto four standoffs." width="1600" height="1000" loading="lazy"></figure>
+        <div class="step-body"><div class="step-head"><span class="sid">G5</span><h3>Standoffs and front plate</h3></div><ol>
+          <li>Stand four 41 mm standoffs on their holes.</li>
+          <li>Lower the front plate so its 6705 slides over the output's front journal and the M8 comes through.</li>
+        </ol><p class="parts"><b>Parts:</b> 05, 4× 06</p></div></article>
+
+      <article class="step has-fig" id="g6"><figure class="fig"><img src="img/g6.jpg" alt="Closed gearbox with M5 bolts through the standoffs." width="1600" height="1000" loading="lazy"></figure>
+        <div class="step-body"><div class="step-head"><span class="sid">G6</span><h3>Bolt up and test</h3></div><ol>
+          <li>Fit 4× M5 × 60 with washers and nuts and tighten in a cross pattern. Tighten the M8 nylock only until snug; it clamps the 608 inner races.</li>
+          <li>Turn the output with a 7/16″ socket. It should feel firm (one output turn is 20 motor turns) and even, with no tight spots.</li>
+          <li>Coat the teeth lightly with PTFE grease. Run the motors slowly first, then at 300 RPM.</li>
+          <li>Torque test: clamp the gearbox, put a 0.5 m lever on the output with a luggage scale at its end, and load it slowly. 2 kg on the scale is about 10 N·m. Stop at the first skip. The prediction is about 12 N·m; record what you measure.</li>
+        </ol><p class="parts"><b>Parts:</b> 4× M5 × 60, nuts, washers, M8 nylock, grease</p></div></article>
+    </section>
+
+    <!-- FRAME -->
+    <section id="frame">
+      <div class="sec-head"><span class="eyebrow">Part F</span><h2>Frame and barrel</h2><p>All machine directions are seen from the front (the long edge you work from): motors on the left, die on the right.</p></div>
+      <figure><div class="fig"><img src="img/m_exploded.jpg" alt="Exploded view of the whole machine: gearbox, thrust bar and bearing, auger lifted above, bulkhead, flange, barrel with heater, die cap, hopper, fan stand." width="1600" height="1000" loading="lazy"></div>
+        <figcaption>Whole machine exploded. The auger is lifted out to show it; in the build it slides in from the gearbox side.</figcaption></figure>
+
+      <article class="step has-fig" id="f1"><figure class="fig"><img src="img/m1.jpg" alt="Bulkhead screwed to the plywood base." width="1600" height="1000" loading="lazy"></figure>
+        <div class="step-body"><div class="step-head"><span class="sid">F1</span><h3>Base and bulkhead</h3></div><ol>
+          <li>Cut the plywood to about 620 × 300 mm.</li>
+          <li>Draw the machine centerline along the board, 120 mm from the front edge. The motors and fan stand sit on the back side.</li>
+          <li>Place the bulkhead on the centerline with its flat motor-side face 170 mm from the left end and its foot pointing right.</li>
+          <li>Square it to the centerline and screw down through the four foot holes with #8 screws and washers.</li>
+        </ol><p class="parts"><b>Parts:</b> plywood, 09, 4× #8 wood screws</p></div></article>
+
+      <article class="step has-fig" id="f2"><figure class="fig"><img src="img/m2.jpg" alt="Floor flange, barrel pipe and die cap separated along the axis." width="1600" height="1000" loading="lazy"></figure>
+        <div class="step-body"><div class="step-head"><span class="sid">F2</span><h3>Barrel and feed slot</h3></div><ol>
+          <li>Wrap 3–4 turns of PTFE tape on the nipple's threads. Tighten the flange onto one end with two pipe wrenches. Leave the cap off until F3.</li>
+          <li>The screw's drag tends to unscrew the pipe from the flange, so make that joint properly tight.</li>
+          <li>Hold the flange with one pair of bolt holes level, so you know which side of the pipe will be on top. Mark the top of the pipe, starting 18 mm past the end of the flange hub.</li>
+          <li>Cut the feed slot there: 35 mm long and 16 mm wide, through the top wall. Deburr the inside edges carefully, because a burr will catch the auger flight.</li>
+        </ol><p class="parts"><b>Parts:</b> nipple, flange, PTFE tape</p></div></article>
+
+      <article class="step has-fig" id="f3"><figure class="fig"><img src="img/m3.jpg" alt="Auger pulled back from the bulkhead with the thrust bearing and thrust bar on its shank." width="1600" height="1000" loading="lazy"></figure>
+        <div class="step-body"><div class="step-head"><span class="sid">F3</span><h3>Auger and thrust stack</h3></div><ol>
+          <li>Bolt the flange to the bulkhead's right face with the slot on top, using the top and bottom bolt holes. Bolt heads go on the motor side.</li>
+          <li>Slide the thrust bearing (washer, needle cage, washer) onto the auger shank until it rests against the start of the flight.</li>
+          <li>Feed the auger in from the motor side, through the bulkhead and flange and into the barrel.</li>
+          <li>Put the thrust bar over the shank, then bolt it through the bulkhead and flange with the two level bolts. Tighten evenly. The auger should still spin by hand with the bearing seated.</li>
+          <li>Look in the open end of the pipe. The flight should stop about 30 mm short of the end. If it's longer, mark it, pull the auger, and cut the extra with an angle grinder.</li>
+          <li>Tape the threads and tighten the drilled cap onto the open end.</li>
+        </ol><p class="parts"><b>Parts:</b> auger, AXK1528, thrust bar, 4× 1/4-20 bolts, nuts, washers, drilled cap</p></div></article>
+
+      <article class="step has-fig" id="f4"><figure class="fig"><img src="img/m4.jpg" alt="Gearbox on its feet sliding toward the auger's hex shank." width="1600" height="1000" loading="lazy"></figure>
+        <div class="step-body"><div class="step-head"><span class="sid">F4</span><h3>Mount the gearbox</h3></div><ol>
+          <li>Swap the two lower standoffs for feet A and B, one at a time. Pull one M5 bolt, slide the standoff out, slide the foot in, and rebolt.</li>
+          <li>Set the gearbox on the base and slide its output onto the auger's hex.</li>
+          <li>Push the gearbox toward the bulkhead until the shank bottoms in the output gear, then back it off 3 mm. The shank must never touch the bottom, or the gears take the thrust.</li>
+          <li>Check that at least 25 mm of hex is engaged. The foot slots allow ±12 mm of travel.</li>
+          <li>Line the gearbox up by eye along the centerline and screw the feet down through the slots. Shim under the feet if the axis sits low.</li>
+        </ol><p class="parts"><b>Parts:</b> 08a, 08b, 4× #8 wood screws</p></div></article>
+    </section>
+
+    <!-- HEAT -->
+    <section id="heat">
+      <div class="sec-head"><span class="eyebrow">Part H</span><h2>Hopper, heat, cooling</h2></div>
+      <article class="step has-fig" id="h1"><figure class="fig"><img src="img/m5.jpg" alt="Hopper above the feed slot on the barrel." width="1600" height="1000" loading="lazy"></figure>
+        <div class="step-body"><div class="step-head"><span class="sid">H1</span><h3>Hopper</h3></div><ol>
+          <li>Set the hopper on the barrel with its throat over the feed slot.</li>
+          <li>Run a hose clamp through each of its two grooves and around the pipe, with the worm screw underneath. Tighten until the hopper can't rotate.</li>
+        </ol><p class="parts"><b>Parts:</b> 10, 2× hose clamps</p></div></article>
+
+      <article class="step has-fig" id="h2"><figure class="fig"><img src="img/m6.jpg" alt="Band heater and thermocouple near the die cap, fan stand after the die." width="1600" height="1000" loading="lazy"></figure>
+        <div class="step-body"><div class="step-head"><span class="sid">H2</span><h3>Heater, sensor, insulation, fan</h3></div><ol>
+          <li><b>Heater:</b> clamp the band heater about 14 mm back from the cap, terminals pointing down.</li>
+          <li><b>Thermocouple:</b> clamp the ring between the heater and the cap with a hose clamp. This is the melt temperature the firmware controls.</li>
+          <li><b>Thermal fuse:</b> clamp it to the barrel right next to the heater, wired in series with one heater lead. Join it with bare butt splices; soldering would trip it.</li>
+          <li><b>Insulation:</b> wrap gasket rope from about 40 mm past the feed slot to the cap, over the heater and sensor, and bind it with Kapton tape. Leave the feed zone bare so pellets don't soften and stick there.</li>
+          <li><b>Fan:</b> screw the fan to the stand so it blows across the filament path. Screw the stand down with its plate just past the die.</li>
+        </ol><p class="parts"><b>Parts:</b> heater, thermocouple, thermal fuse, splices, rope, Kapton, 11, fan</p></div></article>
+    </section>
+
+    <!-- WIRING -->
+    <section id="wiring">
+      <div class="sec-head"><span class="eyebrow">Part W</span><h2>Wiring</h2><p>One 24 V supply runs everything. The e-stop cuts all of it.</p></div>
+      <div class="wiring" role="img" aria-label="Wiring diagram: bench supply through a 15 amp fuse and e-stop to a 24 volt bus feeding both motor drivers, the fan and the MOSFET module; the MOSFET switches the heater through the thermal fuse; the ESP32 sends step and direction to both drivers, PWM to the MOSFET, and reads the thermocouple through the MAX31855.">
+        <svg viewBox="0 0 900 470" xmlns="http://www.w3.org/2000/svg">
+          <rect class="wb" x="20" y="30" width="150" height="58" rx="8"/><text class="wt" x="34" y="56">Bench supply</text><text class="ws" x="34" y="75">24.0 V · limit 9.5 A</text>
+          <rect class="wb" x="210" y="36" width="100" height="46" rx="8"/><text class="wt" x="228" y="58">15 A fuse</text><text class="ws" x="228" y="74">inline blade</text>
+          <rect class="wb hot" x="350" y="36" width="110" height="46" rx="8"/><text class="wt" x="366" y="58">E-stop</text><text class="ws" x="366" y="74">latching, NC</text>
+          <path class="w24" d="M170 59 H210 M310 59 H350 M460 59 H520 V420"/>
+          <text class="wl" x="476" y="52">+24 V bus</text>
+          <path class="wg" d="M95 88 V440 H860"/><text class="wl" x="104" y="436">GND bus (also barrel ground at a flange bolt)</text>
+          <rect class="wb" x="560" y="30" width="170" height="54" rx="8"/><text class="wt" x="574" y="54">SERVO42D #1</text><text class="ws" x="574" y="72">V+ / GND · STEP DIR EN</text>
+          <rect class="wb" x="560" y="104" width="170" height="54" rx="8"/><text class="wt" x="574" y="128">SERVO42D #2</text><text class="ws" x="574" y="146">same settings as #1</text>
+          <path class="w24" d="M520 57 H560 M520 131 H560"/>
+          <rect class="wb" x="560" y="186" width="170" height="54" rx="8"/><text class="wt" x="574" y="210">Fan 24 V</text><text class="ws" x="574" y="228">always on</text>
+          <path class="w24" d="M520 213 H560"/>
+          <rect class="wb" x="560" y="268" width="170" height="60" rx="8"/><text class="wt" x="574" y="292">MOSFET module</text><text class="ws" x="574" y="310">VIN · OUT± · TRIG</text>
+          <path class="w24" d="M520 290 H560"/>
+          <rect class="wb hot" x="760" y="250" width="120" height="44" rx="8"/><text class="wt" x="772" y="270">Thermal fuse</text><text class="ws" x="772" y="286">240 °C</text>
+          <rect class="wb hot" x="760" y="318" width="120" height="44" rx="8"/><text class="wt" x="772" y="338">Band heater</text><text class="ws" x="772" y="354">150 W · ~3.8 Ω</text>
+          <path class="w24" d="M730 286 H745 V272 H760 M820 294 V318 M760 340 H745 V312 H730"/>
+          <rect class="wb ctl" x="210" y="190" width="200" height="130" rx="8"/><text class="wt" x="226" y="214">ESP32</text><text class="ws" x="226" y="232">USB to laptop (power + log)</text>
+          <text class="ws" x="226" y="256">25 STEP · 26 DIR · 27 EN</text><text class="ws" x="226" y="274">23 heater PWM</text><text class="ws" x="226" y="292">5 CS · 18 CLK · 19 DO</text><text class="ws" x="226" y="310">34 speed pot</text>
+          <path class="wsig" d="M410 252 H540 V70 H560 M540 142 H560 M410 270 H545 V310 H560"/>
+          <text class="wl" x="418" y="246">STEP/DIR/EN to both</text>
+          <rect class="wb ctl" x="210" y="360" width="200" height="50" rx="8"/><text class="wt" x="226" y="382">MAX31855</text><text class="ws" x="226" y="398">K-type at the barrel</text>
+          <path class="wsig" d="M310 320 V360"/>
+          <path class="wg" d="M410 300 H430 V440"/>
+        </svg>
+      </div>
+      <div class="tbl"><table>
+        <thead><tr><th>ESP32 pin</th><th>Connects to</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">GPIO25 / 26 / 27</td><td>STEP / DIR / EN on <b>both</b> SERVO42Ds, in parallel</td></tr>
+          <tr><td class="mono">GPIO23</td><td>MOSFET module TRIG (PWM)</td></tr>
+          <tr><td class="mono">GPIO5 / 18 / 19</td><td>MAX31855 CS / CLK / DO; MAX31855 VIN to 3V3</td></tr>
+          <tr><td class="mono">GPIO34</td><td>Speed potentiometer wiper (pot across 3V3 and GND)</td></tr>
+          <tr><td class="mono">GND</td><td>Supply GND (common ground) and MOSFET signal GND</td></tr>
+        </tbody></table></div>
+      <div class="cols">
+        <p class="note">Set both SERVO42Ds to the same microstep and current. At 16 microsteps, 300 motor RPM is a 16 kHz step rate. Check the SERVO42D manual for its input logic level; if it needs 5 V, add a level shifter on STEP/DIR/EN.</p>
+        <p class="note">If the thermocouple reading drops when the barrel heats, swap its two leads. Crimp a ring terminal to a GND wire and put it under a flange nut, so a chafed heater lead can't leave the barrel live.</p>
+      </div>
+    </section>
+
+    <!-- FIRMWARE -->
+    <section id="firmware">
+      <div class="sec-head"><span class="eyebrow">Part S</span><h2>Firmware rules</h2><p>The firmware has to do everything a commercial temperature controller would, plus keep the screw from turning cold plastic. These are the requirements the code has to meet.</p></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Behavior</th><th>Rule</th></tr></thead>
+        <tbody>
+          <tr><td>Heater control</td><td>PID on the MAX31855 reading, with slow PWM (about 1 Hz; the barrel has a lot of thermal mass). PLA setpoint 175–185 °C.</td></tr>
+          <tr><td>Over-temperature <span class="tag w">latch</span></td><td>Heater off if the reading passes 230 °C</td></tr>
+          <tr><td>Heating watchdog <span class="tag w">latch</span></td><td>Heater off if it has been on for 60 s and the temperature rose less than 5 °C</td></tr>
+          <tr><td>Sensor fault <span class="tag w">latch</span></td><td>Heater off on any MAX31855 fault (open, short) or an out-of-range reading</td></tr>
+          <tr><td>Cold-screw interlock</td><td>The screw won't turn until the barrel is within 5 °C of setpoint and has stayed there for 10 minutes</td></tr>
+          <tr><td>Speed</td><td>The potentiometer sets 0–15 screw RPM (0–300 motor RPM), ramped, never stepped</td></tr>
+          <tr><td>Logging</td><td>Once a second over USB: temperature, setpoint, PWM %, screw RPM</td></tr>
+        </tbody></table></div>
+    </section>
+
+    <!-- COMMISSION -->
+    <section id="commission">
+      <div class="sec-head"><span class="eyebrow">Part C</span><h2>First run</h2><p>Work through these in order, and don't put pellets in until C4.</p></div>
+      <div class="tbl"><table>
+        <thead><tr><th>#</th><th>Check</th><th>Pass when</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">C1</td><td>Cold spin, empty: screw at 5 RPM. Viewed from the motor end, a right-hand auger must turn clockwise, like a drill.</td><td>No rubbing or clicking, and the flight moves toward the die. If not, flip DIR in software (both drivers together).</td></tr>
+          <tr><td class="mono">C2</td><td>Electrical: supply at 24.0 V, limit 9.5 A. Measure heater resistance through the thermal fuse, and continuity from barrel to GND.</td><td>About 3.8 Ω, and the barrel is grounded</td></tr>
+          <tr><td class="mono">C3</td><td>Heater, empty barrel: 100 °C, then 180 °C. Tune the PID. Then trip each cutoff on purpose: unplug the thermocouple, and disconnect a heater lead while it heats.</td><td>Overshoot under about 5 °C, and every cutoff shuts the heater off</td></tr>
+          <tr><td class="mono">C4</td><td>Heat soak at 180 °C for 10 minutes. Load dried PLA (4 h at 50–55 °C) to a third of the hopper. Screw at 5 RPM.</td><td>Purge comes out (it may be dark or bubbly at first), then runs clean</td></tr>
+          <tr><td class="mono">C5</td><td>Pull by hand at an even pace past the fan. Measure with calipers every 30 cm, and record RPM, temperature and pull speed.</td><td>Diameter is roughly steady. ±0.05 mm needs the v2 puller.</td></tr>
+        </tbody></table></div>
+    </section>
+
+    <!-- RUN -->
+    <section id="run">
+      <div class="sec-head"><span class="eyebrow">Operation</span><h2>Running it</h2></div>
+      <div class="cols">
+        <div class="card"><h3>Start</h3><ul><li>Heat to setpoint and wait 10 minutes after it gets there.</li><li>Start the screw slowly and ramp up.</li><li>Keep the hopper at least a third full. Running it low causes surging.</li></ul></div>
+        <div class="card"><h3>Stop</h3><ul><li>Stop feeding pellets and run until the output thins.</li><li>Stop the screw, then turn the heater off. Leave the fan on until the barrel is under 60 °C.</li><li>Next time, always heat-soak fully before turning the screw. Cold PLA in the barrel will stall the gearbox.</li></ul></div>
+      </div>
+      <p class="note">When switching materials or additive blends, purge with plain PLA until the output is clean, and log the purge mass. It tells you how long the barrel takes to clear, which you'll need when comparing blends.</p>
+    </section>
+
+    <!-- TROUBLE -->
+    <section id="trouble">
+      <div class="sec-head"><span class="eyebrow">Fixes</span><h2>Troubleshooting</h2></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr><td>Screw turns, nothing comes out</td><td>Pellets bridging in the throat because the feed zone is too warm</td><td>Keep the feed zone uninsulated and aim airflow at the throat. Check the slot isn't blocked.</td></tr>
+          <tr><td>Motors stall or skip</td><td>Barrel not fully soaked, RPM too high, or the die is blocked</td><td>Finish the soak, lower RPM, clear the die</td></tr>
+          <tr><td>Output surges thick and thin</td><td>Temperature swinging, hopper running low, uneven pulling</td><td>Retune the PID, keep the hopper fed. The v2 puller fixes the pulling.</td></tr>
+          <tr><td>Bubbles, popping</td><td>Wet pellets</td><td>Dry them 4 h at 50–55 °C</td></tr>
+          <tr><td>Brown or smoky output</td><td>Too hot, or sitting hot too long</td><td>Drop 5–10 °C. Don't idle at temperature.</td></tr>
+          <tr><td>Filament too thin or too thick</td><td>Pull speed doesn't match the flow</td><td>Pull slower or faster. Try another cap with a different hole.</td></tr>
+          <tr><td>Clicking from the gearbox</td><td>Inner motor screw heads touching the 75T, or dry teeth</td><td>Recheck <a href="#g1">G1</a>, then grease</td></tr>
+          <tr><td>Auger grinds or rubs</td><td>Gearbox out of line with the bulkhead, or a burr in the barrel</td><td>Realign the feet, deburr the slot edges</td></tr>
+          <tr><td>Pipe works loose from the flange</td><td>Screw drag unthreads it</td><td>Re-tape and retighten. Add a pipe strap at mid-barrel if it keeps happening.</td></tr>
+          <tr><td>Thermal fuse blew</td><td>The firmware failed to stop the heater</td><td>Find out why before replacing the fuse</td></tr>
+        </tbody></table></div>
+    </section>
+
+    <!-- MODEL -->
+    <section id="model">
+      <div class="sec-head"><span class="eyebrow">Explore</span><h2>3D model</h2><p>Drag to rotate, scroll or pinch to zoom. It's the same geometry as the renders, lightly simplified to load faster.</p></div>
+      <div class="viewer" id="viewer"><img class="poster" src="img/m_hero.jpg" alt="Static render of the assembled extruder, shown until the 3D model loads."></div>
+      <div class="vbar">
+        <button class="primary" id="vload" type="button">Load 3D model (3.4 MB)</button>
+        <button type="button" data-mode="assembled" aria-pressed="true" hidden>Assembled</button>
+        <button type="button" data-mode="exploded" aria-pressed="false" hidden>Exploded</button>
+        <button type="button" data-mode="cut" aria-pressed="false" hidden>Cutaway</button>
+        <span class="vmsg" id="vmsg"></span>
+      </div>
+    </section>
+
+    <!-- DIMS -->
+    <section id="dims">
+      <div class="sec-head"><span class="eyebrow">Reference</span><h2>Key dimensions</h2><p>Positions along the auger axis, measured from the inner face of the gearbox back plate. The axis sits 110 mm above the base.</p></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Item</th><th>Axial position (mm)</th></tr></thead>
+        <tbody>
+          <tr><td>Auger hex tip (3 mm off the gear's hex floor)</td><td class="num">≈ −3</td></tr>
+          <tr><td>Gearbox front face (bearing boss)</td><td class="num">49</td></tr>
+          <tr><td>Thrust bar</td><td class="num">69 – 75</td></tr>
+          <tr><td>Thrust bearing, start of flight</td><td class="num">75 – 79</td></tr>
+          <tr><td>Bulkhead</td><td class="num">75 – 87</td></tr>
+          <tr><td>Floor flange (base, hub)</td><td class="num">87 – 112</td></tr>
+          <tr><td>Feed slot / hopper throat</td><td class="num">130 – 165</td></tr>
+          <tr><td>Band heater</td><td class="num">335 – 375</td></tr>
+          <tr><td>End of flight</td><td class="num">≈ 372</td></tr>
+          <tr><td>Thermocouple</td><td class="num">≈ 380</td></tr>
+          <tr><td>Brass cap / die face</td><td class="num">389 – 411</td></tr>
+          <tr><td>Fan center</td><td class="num">455</td></tr>
+        </tbody></table></div>
+      <p style="color:var(--muted);font-size:.88rem">These assume the gearbox sits in the middle of its slot travel. Your auger's shank length moves the gearbox by up to ±12 mm; nothing else changes.</p>
+      <p style="color:var(--muted);font-size:.88rem"><em>Build manual and renders drafted with help from Claude (Anthropic).</em></p>
+    </section>
+  </main>
+</div>
+
+<script>
+(function(){
+  const HERO = {motors:[23.5,19.2,'Motors: 2× NEMA 17 + SERVO42D'], gearbox:[26.6,32.1,'Printed 20:1 gearbox'], feet:[17.3,60.9,'Gearbox feet (slotted)'],
+    thrust:[28.1,44,'Thrust bar and bearing'], bulkhead:[29.5,57.8,'Bulkhead'], flange:[30.6,40.2,'Floor flange'], hopper:[35.7,31.3,'Hopper'],
+    barrel:[55.5,45.9,'Barrel: 3/4″ black pipe'], heater:[68.7,49.5,'Band heater, 24 V 150 W'], tc:[72.8,51.6,'Thermocouple'], die:[76.4,52.3,'Die: drilled brass cap'], fan:[86.9,46.9,'Cooling fan']};
+  const CUT = {hex:[82.4,48.6,'Hex shank in the output gear'], gears:[82.9,32,'20:1 gear train'], bearing:[74,45.6,'Thrust bearing takes the push-back'],
+    throat:[61.9,42.1,'Feed throat: pellets drop in'], flight:[43.9,48.6,'Flight carries and compacts pellets'], melt:[25.8,48.6,'Melt zone under the heater'], die:[16.3,48.6,'Die: 1.75 mm']};
+  function place(figId, legId, data){
+    const fig = document.getElementById(figId), leg = document.getElementById(legId); let i = 1;
+    for (const k in data){ const [x,y,label] = data[k];
+      const m = document.createElement('span'); m.className='mk'; m.style.left=x+'%'; m.style.top=y+'%'; m.textContent=i; m.setAttribute('aria-hidden','true'); fig.appendChild(m);
+      const li = document.createElement('li'); li.innerHTML = '<b>'+i+'</b><span></span>'; li.lastChild.textContent = label; leg.appendChild(li); i++; }
+  }
+  place('hero','hero-legend',HERO); place('cut','cut-legend',CUT);
+})();
+</script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+const btn = document.getElementById('vload'), box = document.getElementById('viewer'), msg = document.getElementById('vmsg');
+const modeBtns = [...document.querySelectorAll('[data-mode]')];
+const GB = ['gb_back','gb_front','gb_pinions','gb_motors','gb_compound','gb_out_rear','gb_out_front','gb_out_screws','gb_stand','gb_m5','gb_spacer0','gb_spacer1','gb_m8','gb_feet'];
+const EXPL = Object.assign(Object.fromEntries(GB.map(g=>[g,[0,0,-150]])), {flangebolts:[0,0,-105], thrustbar:[0,0,-80], bearing:[0,0,-50], auger:[0,95,0],
+  flange:[0,0,45], pipe:[0,0,75], heater:[0,0,75], thermocouple:[0,0,75], cap:[0,0,115], hopper:[0,150,75], clamps:[0,120,75], fanstand:[0,0,150], fan:[0,0,150]});
+btn.addEventListener('click', async () => {
+  btn.disabled = true; msg.textContent = 'Loading…';
+  try {
+    const THREE = await import('three');
+    const {GLTFLoader} = await import('three/addons/loaders/GLTFLoader.js');
+    const {OrbitControls} = await import('three/addons/controls/OrbitControls.js');
+    const groups = await (await fetch('model/groups.json')).json();
+    const r = new THREE.WebGLRenderer({antialias:true}); r.setPixelRatio(Math.min(devicePixelRatio,2)); r.outputColorSpace = THREE.SRGBColorSpace; r.localClippingEnabled = true;
+    const s = new THREE.Scene(); s.background = new THREE.Color('#eef1f4');
+    s.add(new THREE.HemisphereLight(0xffffff, 0x8a96a3, 1.5));
+    const d1 = new THREE.DirectionalLight(0xffffff, 2.2); d1.position.set(400,700,500); s.add(d1);
+    const d2 = new THREE.DirectionalLight(0xffffff, 0.8); d2.position.set(-500,200,-400); s.add(d2);
+    const cam = new THREE.PerspectiveCamera(32, 1.6, 1, 8000); cam.position.set(-600,320,520);
+    const ctl = new OrbitControls(cam, r.domElement); ctl.target.set(20,-25,215); ctl.enableDamping = true; ctl.update();
+    const clip = [new THREE.Plane(new THREE.Vector3(-1,0,0), 0)];
+    const pal = n => n.startsWith('pla_') ? [0x56c96a,.75,0] : (n.startsWith('paht_')||n.startsWith('gear')) ? [0x3b3f45,.8,0] : n.startsWith('motor_drv') ? [0x1f4f8f,.6,.1] :
+      n.startsWith('motor') ? [0x26282b,.55,.2] : n.startsWith('black_') ? [0x34373b,.5,.5] : n.startsWith('brass') ? [0xd4a94e,.4,.3] : n.startsWith('wood') ? [0xd8b98a,.9,0] :
+      n.startsWith('white') ? [0xf3efe6,.4,0] : [0xb9bec5,.35,.7];
+    const meshes = [];
+    const pack = await (await fetch('model/extruder.json')).json();
+    const bin = Uint8Array.from(atob(pack.glb_b64), c => c.charCodeAt(0)).buffer;
+    const g = await new GLTFLoader().parseAsync(bin, '');
+    g.scene.traverse(o => { if (!o.isMesh) return; const [c,ro,me] = pal(o.name);
+      o.material = new THREE.MeshStandardMaterial({color:c, roughness:ro, metalness:me, flatShading:true, side:THREE.DoubleSide});
+      o.userData.home = o.position.clone(); o.userData.group = groups[o.name] || groups[o.parent && o.parent.name] || ''; meshes.push(o); });
+    s.add(g.scene);
+    box.querySelector('.poster').remove(); box.appendChild(r.domElement);
+    const size = () => { const w = box.clientWidth, h = box.clientHeight; r.setSize(w,h,false); cam.aspect = w/h; cam.updateProjectionMatrix(); };
+    new ResizeObserver(size).observe(box); size();
+    let target = {}, mode = 'assembled';
+    function setMode(m){ mode = m; modeBtns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode===m)));
+      for (const o of meshes){ const off = m==='exploded' ? (EXPL[o.userData.group]||[0,0,0]) : [0,0,0];
+        o.userData.to = o.userData.home.clone().add(new THREE.Vector3(...off)); o.material.clippingPlanes = m==='cut' ? clip : [];
+        o.visible = !(m==='cut' && o.userData.group==='filament'); o.material.needsUpdate = true; } }
+    modeBtns.forEach(b => { b.hidden = false; b.addEventListener('click', () => setMode(b.dataset.mode)); });
+    setMode('assembled'); btn.hidden = true; msg.textContent = '';
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    (function tick(){ for (const o of meshes){ if (o.userData.to) o.position.lerp(o.userData.to, reduce ? 1 : 0.14); }
+      ctl.update(); r.render(s, cam); requestAnimationFrame(tick); })();
+  } catch (e) { msg.textContent = 'The 3D model could not load here (' + (e && e.message ? e.message : 'unknown error') + '). The renders above show the same geometry.'; btn.disabled = false; }
+});
+</script>
+
+</body></html>
