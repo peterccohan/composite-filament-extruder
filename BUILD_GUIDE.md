@@ -415,4 +415,4 @@ These assume the gearbox sits in the middle of its slot travel. Your auger's sha
 
 ---
 
-*Build manual and renders drafted with help from Claude (Anthropic).*
+*Build manual and renders built by hand in Onshape (CAD) then organized by Claude (anthropic)*
